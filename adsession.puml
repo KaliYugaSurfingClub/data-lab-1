@@ -1,0 +1,45 @@
+@startuml
+title ad session
+
+actor "person" as person
+participant "frontend" as frontend
+participant "backend" as backend
+
+person --> frontend : click on shortened url (https://shortener/{alias})
+
+frontend --> backend : request {ip, language, alias}
+
+create control "select ad according to the user's language" as selectAD
+backend --> selectAD : {ip, language}
+backend <-- selectAD : {video_id}
+
+create control "find link by alias" as find
+backend --> find : {alias}
+backend <-- find : {link_id}
+
+create control "Create new click in database" as createClick
+backend --> createClick : {link_id, video_id}
+backend <-- createClick : {click_id}
+
+frontend <-- backend : response {video_id, click_id}
+frontend <--> backend : stream video (video.id == video_id)
+
+person --> frontend : watch video
+frontend --> backend : request {click_id}
+
+create control "give reward to the link creator" as reward
+backend --> reward : <<async>>
+
+create control "increment video views" as increment
+backend --> increment : <<async>>
+
+create control "find original url of link by click_id" as findByClick
+backend --> findByClick : {click_id}
+backend <-- findByClick : {original}
+
+frontend <-- backend : response {original}
+
+person --> frontend : click on original url
+person <-- frontend : redirect to original url
+
+@enduml

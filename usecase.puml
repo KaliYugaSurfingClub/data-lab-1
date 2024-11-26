@@ -1,0 +1,54 @@
+@startuml
+title url shortener use cases
+left to right direction
+
+actor "person" as person
+actor "worker" as worker
+actor "advertiser" as advertiser
+actor "customer" as customer
+
+customer -left-> worker
+customer -left-> advertiser
+
+usecase "watch ad" as watch
+
+person --> (sign in)
+person --> (sign up)
+person --> (open shortened url)
+
+"open shortened url" <.. watch : extends (if link monetization level > 0)
+"open shortened url" <.. (be redirected to original url) : extends
+watch <.. (be redirected to original url) : extends
+
+
+usecase "Get statistic \n about clicks on his link" as getLinkStat
+usecase "get reward" as reward
+
+worker --> (create link)
+worker --> (delete link)
+worker --> (get links)
+worker --> getLinkStat
+worker --> reward
+
+"create link" ..> (specify monetization level) : include
+"create link" ..> (specify original url) : include
+"create link" ..> (specify alias for url) : include
+
+
+usecase "post an advertisement \n by paying based on a cost-per-view" as postAD
+
+advertiser --> postAD
+advertiser --> (get statistic \n about ad video views)
+
+postAD ..> (attach file) : include
+postAD ..> (specify the language \n of the audience) : include
+
+
+customer --> (log out)
+customer --> (withdraw from the balance)
+customer --> (top up the balance)
+
+watch ..> reward : include
+watch ..> (increment video views) : include
+
+@enduml
